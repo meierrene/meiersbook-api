@@ -1,5 +1,4 @@
 const express = require('express');
-// const fs = require('fs');
 const postRouter = require('./routes/postRoutes');
 const bodyParser = require('body-parser');
 const ErrorThrower = require('./utils/ErrorThrower');
@@ -12,11 +11,14 @@ app.use(bodyParser.json());
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-app.set('view engine', 'html');
-
 app.use(
   '/uploads/postsImages/',
   express.static(path.join('uploads', 'postsImages'))
+);
+
+app.use(
+  '/uploads/profilesImages/',
+  express.static(path.join('uploads', 'profilesImages'))
 );
 
 app.use((req, res, next) => {
