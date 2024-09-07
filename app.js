@@ -12,6 +12,8 @@ app.use(bodyParser.json());
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
+app.set('view engine', 'html');
+
 app.use(
   '/uploads/postsImages/',
   express.static(path.join('uploads', 'postsImages'))
