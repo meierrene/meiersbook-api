@@ -4,7 +4,9 @@ const postSchema = new mongoose.Schema(
   {
     title: { type: String },
     image: { type: String, required: [true, 'Please provide a image.'] },
-    createdAt: { type: Date, default: Date.now() },
+    createdAt: { type: Date, default: Date.now },
+    likes: { type: Number, default: 0 },
+    creator: { type: mongoose.Types.ObjectId, ref: 'User' },
   },
   { toJSON: { virtuals: true } },
   { toObject: { virtuals: true } }

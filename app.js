@@ -1,12 +1,10 @@
 const express = require('express');
 const postRouter = require('./routes/postRoutes');
-const bodyParser = require('body-parser');
+const userRouter = require('./routes/userRoutes');
 const ErrorThrower = require('./utils/ErrorThrower');
-const errorController = require('./controllers/errorController');
+// const errorController = require('./controllers/errorController');
 const path = require('path');
 const app = express();
-
-app.use(bodyParser.json());
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
@@ -31,11 +29,13 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/api/v1/users', userRouter);
 app.use('/api/v1/posts', postRouter);
+
 app.all('*', (req, res, next) => {
   next(new ErrorThrower(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-app.use(errorController);
+// app.use(errorController);
 
 module.exports = app;

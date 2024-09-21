@@ -1,3 +1,3 @@
 exports.pathPostImage = 'uploads/postsImages';
-exports.pathProfileImage = 'uploads/profileImages';
+exports.pathUserImage = 'uploads/userImages';
 exports.newImage = 'newImage.jpeg';

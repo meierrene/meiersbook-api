@@ -1,4 +1,5 @@
 const Post = require('../models/postModel');
+const User = require('../models/userModel');
 const operators = require('./operators');
 const catcher = require('../utils/catcher');
 const multer = require('multer');
@@ -26,7 +27,6 @@ exports.resizeImage = catcher(async (req, res, next) => {
     .toFormat('jpeg')
     .jpeg({ quality: 100 })
     .toFile(`${options.pathPostImage}/${req.body.image}`);
-
   next();
 });
 
@@ -35,8 +35,9 @@ exports.getPost = operators.getOne(Post);
 exports.createPost = operators.createOne(
   Post,
   options.pathPostImage,
-  options.newImage
+  options.newImage,
+  User
 );
 exports.updatePost = operators.updateOne(Post);
-exports.deletePost = operators.deleteOne(Post, options.pathPostImage);
-exports.deleteEverything = operators.deleteAll(Post);
+exports.deletePost = operators.deleteOne(Post, options.pathPostImage, User);
+exports.deleteEverything = operators.deleteAll(Post, options.pathPostImage);
