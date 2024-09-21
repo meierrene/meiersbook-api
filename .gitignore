@@ -1,5 +1,6 @@
-/node_modules
-npm-debug.log
-.DS_Store
-/*.env
-.vercel
+# Ignore node_modules
+node_modules/
+
+# Ignore environment files
+*.env
+config.env
