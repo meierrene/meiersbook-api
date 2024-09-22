@@ -33,7 +33,7 @@ const createSendToken = (user, statusCode, req, res) => {
 };
 
 exports.signup = catcher(async (req, res, next) => {
-  const url = `${req.protocol}://${req.get('host')}/me`;
+  const url = process.env.WEBSITE;
   await new Email(req.newData, url).sendWelcome();
   createSendToken(req.newData, 201, req, res);
 });
@@ -182,9 +182,7 @@ exports.forgotPassword = catcher(async (req, res, next) => {
 
   // 3) Send it to user's email
   try {
-    const resetURL = `${req.protocol}://${req.get(
-      'host'
-    )}/api/v1/users/resetPassword/${resetToken}`;
+    const resetURL = `${process.env.WEBSITE}/resetPassword/${resetToken}`;
 
     await new Email(user, resetURL).sendPasswordReset();
 
