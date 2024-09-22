@@ -2,23 +2,23 @@ const express = require('express');
 const postRouter = require('./routes/postRoutes');
 const userRouter = require('./routes/userRoutes');
 const ErrorThrower = require('./utils/ErrorThrower');
-// const errorController = require('./controllers/errorController');
 const path = require('path');
 const app = express();
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
+// Serve static files for post images and user images
 app.use(
-  __dirname + '/uploads/postsImages/',
-  express.static(path.join('uploads', 'postsImages'))
+  '/uploads/postsImages',
+  express.static(path.join(__dirname, 'uploads', 'postsImages'))
+);
+app.use(
+  '/uploads/userImages',
+  express.static(path.join(__dirname, 'uploads', 'userImages'))
 );
 
-app.use(
-  __dirname + '/uploads/userImages/',
-  express.static(path.join('uploads', 'userImages'))
-);
-
+// CORS settings
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
@@ -29,9 +29,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Routes
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/posts', postRouter);
 
+// Error handler for unknown routes
 app.all('*', (req, res, next) => {
   next(new ErrorThrower(`Can't find ${req.originalUrl} on this server!`, 404));
 });
