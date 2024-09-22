@@ -10,13 +10,13 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 app.use(
-  '/uploads/postsImages/',
+  __dirname + '/uploads/postsImages/',
   express.static(path.join('uploads', 'postsImages'))
 );
 
 app.use(
-  '/uploads/profilesImages/',
-  express.static(path.join('uploads', 'profilesImages'))
+  __dirname + '/uploads/userImages/',
+  express.static(path.join('uploads', 'userImages'))
 );
 
 app.use((req, res, next) => {
