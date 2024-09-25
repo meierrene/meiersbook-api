@@ -7,14 +7,9 @@ const path = require('path');
 const app = express();
 
 // CORS Configuration
-const allowedOrigin =
-  process.env.NODE_ENV === 'production'
-    ? 'https://meiersbook.renemeier.info'
-    : 'http://localhost:5173';
-
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: process.env.WEBSITE,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
