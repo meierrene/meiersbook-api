@@ -14,7 +14,7 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 exports.getUserNamebyId = (req, res, next) => {
-  req.filtered = 'name';
+  req.filtered = ['name', 'image', 'email'];
   next();
 };
 
