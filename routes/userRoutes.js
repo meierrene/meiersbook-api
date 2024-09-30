@@ -6,6 +6,10 @@ const options = require('../utils/options');
 
 const router = express.Router();
 
+router
+  .route('/find/:id')
+  .get(userController.getUserNamebyId, userController.getUser);
+
 router.post(
   '/signup',
   operators.uploadImage,
@@ -45,7 +49,7 @@ router
 
 router
   .route('/:id')
-  .get(userController.getUser)
+  // .get(userController.getUser)
   .patch(
     operators.uploadImage,
     operators.resizeImage(options.pathUserImage, true, 500, 500, 80),

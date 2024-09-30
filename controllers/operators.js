@@ -15,7 +15,7 @@ exports.getAll = Model =>
 
 exports.getOne = (Model, pop) =>
   catcher(async (req, res, next) => {
-    let data = await Model.findById(req.params.id);
+    let data = await Model.findById(req.params.id).select(req.filtered);
     if (pop) data = await data.populate(pop);
     if (!data)
       return next(new ErrorThrower('No document found with that ID', 404));

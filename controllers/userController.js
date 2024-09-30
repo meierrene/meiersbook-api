@@ -2,39 +2,8 @@ const User = require('../models/userModel');
 const Post = require('../models/postModel');
 const operators = require('./operators');
 const catcher = require('../utils/catcher');
-const multer = require('multer');
-const sharp = require('sharp');
 const ErrorThrower = require('../utils/ErrorThrower');
 const options = require('../utils/options');
-
-const storage = multer.memoryStorage();
-
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) cb(null, true);
-  else cb(new ErrorThrower('Please upload only images.', 400));
-};
-
-const upload = multer({ storage, fileFilter });
-
-exports.uploadUserPhoto = upload.single('image');
-
-exports.resizeUserPhoto = catcher(async (req, res, next) => {
-  if (!req.file) return next();
-
-  // priorities: req.params.id --> req.user.image --> options.newImage
-
-  req.body.image = req.params.id
-    ? `image-${req.params.id}.jpeg`
-    : req.user?.image
-    ? req.user.image
-    : options.newImage;
-  await sharp(req.file.buffer, { failOnError: false })
-    .resize(500, 500)
-    .toFormat('jpeg')
-    .jpeg({ quality: 80 })
-    .toFile(`${options.pathUserImage}/${req.body.image}`);
-  next();
-});
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -42,6 +11,11 @@ const filterObj = (obj, ...allowedFields) => {
     if (allowedFields.includes(el)) newObj[el] = obj[el];
   });
   return newObj;
+};
+
+exports.getUserNamebyId = (req, res, next) => {
+  req.filtered = 'name';
+  next();
 };
 
 exports.getMe = (req, res, next) => {
