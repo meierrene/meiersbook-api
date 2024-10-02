@@ -72,6 +72,12 @@ exports.updateOne = Model =>
       new: true,
       runValidators: true,
     });
+
+    if (Model.modelName === 'Post' && data && data.modified === false) {
+      data.modified = true;
+      await data.save();
+    }
+
     if (!data)
       return next(
         new ErrorThrower('No document found and cannot be modified', 404)

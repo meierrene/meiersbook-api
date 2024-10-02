@@ -1,33 +1,69 @@
 const Post = require('../models/postModel');
 const User = require('../models/userModel');
 const operators = require('./operators');
-const catcher = require('../utils/catcher');
-const multer = require('multer');
-const sharp = require('sharp');
-const ErrorThrower = require('../utils/ErrorThrower');
 const options = require('../utils/options');
+const catcher = require('../utils/catcher');
+const ErrorThrower = require('../utils/ErrorThrower');
 
-const storage = multer.memoryStorage();
+exports.userCheck = catcher(async (req, res, next) => {
+  const user = await Post.findById(req.path.replace('/', '')).select('creator');
+  if (user.creator.toString() === req.user.id) next();
+  else return next(new ErrorThrower('Not authorized', 401));
+});
 
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) cb(null, true);
-  else cb(new ErrorThrower('Please upload only images.', 400), false);
-};
+exports.like = catcher(async (req, res, next) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user.id;
 
-const upload = multer({ storage, fileFilter });
+    // Find the post and check if user has already liked it
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: 'Post not found' });
 
-exports.uploadImage = upload.single('image');
+    // Check if the user is trying to like their own post
+    if (post.creator.toString() === userId) {
+      return res.status(400).json({ message: 'You cannot like your own post' });
+    }
 
-exports.resizeImage = catcher(async (req, res, next) => {
-  if (!req.file) return next();
-  req.body.image = req.params.id
-    ? `image-${req.params.id}.jpeg`
-    : options.newImage;
-  await sharp(req.file.buffer, { failOnError: false })
-    .toFormat('jpeg')
-    .jpeg({ quality: 100 })
-    .toFile(`${options.pathPostImage}/${req.body.image}`);
-  next();
+    // Check if user already liked the post
+    if (post.likes.includes(userId)) {
+      return res
+        .status(400)
+        .json({ message: 'You have already liked this post' });
+    }
+
+    // Add the user's ID to the likes array
+    post.likes.push(userId);
+    await post.save();
+
+    res.status(200).json({ message: 'Post liked', post });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+exports.unlike = catcher(async (req, res, next) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user.id;
+
+    // Find the post
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
+    // Check if user has not liked the post
+    if (!post.likes.includes(userId)) {
+      return res.status(400).json({ message: 'You have not liked this post' });
+    }
+
+    // Remove the user's ID from the likes array
+    post.likes = post.likes.filter(id => id.toString() !== userId);
+    await post.save();
+
+    res.status(200).json({ message: 'Post unliked', post });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 exports.getAllPosts = operators.getAll(Post);

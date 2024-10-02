@@ -6,8 +6,6 @@ const options = require('../utils/options');
 
 const router = express.Router();
 
-// router.use(operators.middlewareTest);
-
 router.get('/', postController.getAllPosts);
 router.get('/:id', postController.getPost);
 
@@ -27,7 +25,11 @@ router.post(
   postController.createPost
 );
 
+router.route('/:id/like').post(postController.like); // ‾\("/)/‾
+router.route('/:id/unlike').post(postController.unlike);
+
 router
+  .use(postController.userCheck)
   .route('/:id')
   .patch(
     operators.uploadImage,

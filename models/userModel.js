@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords do not match',
     },
   },
+  createdAt: { type: Date, default: Date.now },
   posts: [{ type: mongoose.Types.ObjectId, ref: 'Post' }],
   passwordChangedAt: Date,
   passwordResetToken: String,
