@@ -13,15 +13,6 @@ const postSchema = new mongoose.Schema(
   { toObject: { virtuals: true } }
 );
 
-// Middleware to automatically set the `modified` field to true if the post is edited
-postSchema.pre('save', function (next) {
-  // Check if any field other than 'likes' is modified
-  if (this.isModified('title') || this.isModified('image')) {
-    this.modified = true;
-  }
-  next();
-});
-
 postSchema.pre(/^find/, function (next) {
   this.select('-__v');
   next();
