@@ -190,6 +190,7 @@ exports.resizeImage = (path, isUser, resX = null, resY = null, quality = 100) =>
       : options.newImage;
 
     await sharp(req.file.buffer, { failOnError: false })
+      .rotate()
       .resize(resX, resY)
       .toFormat('jpeg')
       .jpeg({ quality })
@@ -202,31 +203,3 @@ exports.middlewareTest = () =>
   catcher(async (req, res, next) => {
     res.status(200).json({ status: 'success' });
   });
-
-// exports.deleteAllBackup = (Model, folderPath, creatorId = null) =>
-//   catcher(async (req, res, next) => {
-//     if (Model) await Model.deleteMany();
-
-//     fs.readdir(folderPath, (err, files) => {
-//       if (err) {
-//         console.error(`Error reading folder: ${err}`);
-//         return;
-//       }
-//       // Loop through the files and delete each one
-//       files.forEach(file => {
-//         const filePath = path.join(folderPath, file);
-//         fs.unlink(filePath, err => {
-//           if (err) {
-//             console.error(`Error deleting file: ${filePath} - ${err}`);
-//           } else {
-//             console.log(`Deleted file: ${filePath}`);
-//           }
-//         });
-//       });
-//     });
-
-//     res.status(201).json({
-//       status: 'success',
-//       message: 'All data were deleted with success!',
-//     });
-//   });
