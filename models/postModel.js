@@ -8,6 +8,24 @@ const postSchema = new mongoose.Schema(
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     creator: { type: mongoose.Types.ObjectId, ref: 'User' },
     modified: { type: Boolean, default: false },
+    comments: [
+      {
+        text: String,
+        edited: {
+          type: Boolean,
+          default: false,
+        },
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { toJSON: { virtuals: true } },
   { toObject: { virtuals: true } }

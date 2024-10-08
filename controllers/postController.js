@@ -66,6 +66,109 @@ exports.unlike = catcher(async (req, res, next) => {
   }
 });
 
+exports.comment = catcher(async (req, res, next) => {
+  try {
+    const { text } = req.body;
+    const postId = req.params.id;
+    const userId = req.user._id.toString();
+
+    const post = await Post.findById(postId).populate('creator');
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check if the user is trying to comment on their own post
+    if (post.creator._id.toString() === userId.toString()) {
+      return res
+        .status(400)
+        .json({ message: 'You cannot comment on your own post' });
+    }
+
+    // Add the comment
+    post.comments.push({ text, user: userId });
+    await post.save();
+
+    res.status(201).json({ message: 'Comment added successfully', post });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+exports.editComment = catcher(async (req, res, next) => {
+  try {
+    const { id, commentId } = req.params;
+    const { text } = req.body;
+    const userId = req.user._id.toString();
+
+    const post = await Post.findById(id).populate('comments.user');
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Find the specific comment by ID within the comments array
+    const comment = post.comments.id(commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Check if the user is the owner of the comment
+    if (comment.user._id.toString() !== userId.toString()) {
+      return res
+        .status(403)
+        .json({ message: 'Not authorized to update this comment' });
+    }
+
+    // Update the comment text
+    comment.text = text;
+    comment.edited = true;
+    await post.save();
+
+    res.status(200).json({ message: 'Comment updated successfully', comment });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+exports.removeComment = catcher(async (req, res, next) => {
+  try {
+    const { id, commentId } = req.params;
+    const userId = req.user._id.toString();
+
+    const post = await Post.findById(id).populate('creator comments.user');
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    // Find the comment to delete
+    const comment = post.comments.id(commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Check if the user is the post creator or the comment creator
+    if (
+      post.creator._id.toString() !== userId.toString() &&
+      comment.user._id.toString() !== userId.toString()
+    ) {
+      return res
+        .status(403)
+        .json({ message: 'Not authorized to delete this comment' });
+    }
+
+    // Remove the comment
+    comment.deleteOne();
+    await post.save();
+
+    res.status(200).json({ message: 'Comment deleted successfully', post });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
 exports.getAllPosts = operators.getAll(Post);
 exports.getPost = operators.getOne(Post);
 exports.createPost = operators.createOne(

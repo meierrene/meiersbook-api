@@ -25,8 +25,14 @@ router.post(
   postController.createPost
 );
 
-router.route('/:id/like').post(postController.like); // ‾\("/)/‾
+router.route('/:id/like').post(postController.like);
 router.route('/:id/unlike').post(postController.unlike);
+
+router.route('/:id/comment').post(postController.comment);
+router
+  .route('/:id/comment/:commentId')
+  .patch(postController.editComment)
+  .delete(postController.removeComment);
 
 router
   .use(postController.userCheck)
