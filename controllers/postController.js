@@ -20,11 +20,6 @@ exports.like = catcher(async (req, res, next) => {
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    // Check if the user is trying to like their own post
-    if (post.creator.toString() === userId) {
-      return res.status(400).json({ message: 'You cannot like your own post' });
-    }
-
     // Check if user already liked the post
     if (post.likes.includes(userId)) {
       return res
@@ -76,13 +71,6 @@ exports.comment = catcher(async (req, res, next) => {
 
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
-    }
-
-    // Check if the user is trying to comment on their own post
-    if (post.creator._id.toString() === userId.toString()) {
-      return res
-        .status(400)
-        .json({ message: 'You cannot comment on your own post' });
     }
 
     // Add the comment
