@@ -13,7 +13,7 @@ router
 router.post(
   '/signup',
   operators.uploadImage,
-  operators.resizeImage(options.pathUserImage, false, 500, 500, 80),
+  operators.resizeImage(options.pathUserImage, 500, 500, 80),
   userController.createUser,
   authController.signup
 );
@@ -30,7 +30,7 @@ router.get('/me', userController.getMe, userController.getUser);
 router.patch(
   '/updateMe',
   operators.uploadImage,
-  operators.resizeImage(options.pathUserImage, true, 500, 500, 80),
+  operators.resizeImage(options.pathUserImage, 500, 500, 80),
   userController.updateMe
 );
 router.delete(

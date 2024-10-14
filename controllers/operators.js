@@ -5,7 +5,8 @@ const path = require('path');
 const multer = require('multer');
 const sharp = require('sharp');
 const mongoose = require('mongoose');
-const options = require('../utils/options');
+const supabase = require('../utils/supabase.js');
+const options = require('../utils/options.js');
 
 exports.getAll = Model =>
   catcher(async (req, res, next) => {
@@ -25,33 +26,35 @@ exports.getOne = (Model, pop) =>
     });
   });
 
-exports.createOne = (Model, path, file, secModel) =>
+exports.createOne = (Model, secModel) =>
   catcher(async (req, res, next) => {
     // 1. Create the document
     const data = await Model.create(req.body);
+    const bucket = `${Model.modelName.toLowerCase()}-images`;
+    const newFileName = `${Model.modelName.toLowerCase()}-${data.id}.jpeg`;
 
-    // 2. Handle image renaming, if applicable
-    if (path && file) {
-      data.image = `image-${data.id}.jpeg`;
-      fs.renameSync(`${path}/${file}`, `${path}/${data.image}`);
+    await renameBucketImage(bucket, data.image, newFileName);
+    data.image = newFileName;
+
+    if (req.body.imageUrl) {
+      data.image = req.body.imageUrl;
       await data.save({ validateBeforeSave: false });
     }
 
-    // 3. Handle assigning the post to the user, if secModel is provided
     if (secModel) {
       try {
         const session = await mongoose.startSession();
         session.startTransaction();
-        const user = await secModel.findById(req.user.id);
+        const user = await secModel.findById(req.user.id).session(session);
         if (!user) {
           await session.abortTransaction();
           return next(
             new ErrorThrower('Could not find user for provided id', 404)
           );
         }
-        data.creator = user.id;
+        data.creator = user._id;
         await data.save({ session, validateBeforeSave: false });
-        user.posts.push(data);
+        user.posts.push(data._id);
         await user.save({ session, validateBeforeSave: false });
         await session.commitTransaction();
       } catch (error) {
@@ -60,7 +63,6 @@ exports.createOne = (Model, path, file, secModel) =>
       }
     }
 
-    // 5. Return the created data
     req.newData = data;
     if (data.password) next();
     else res.status(201).json({ status: 'success', data });
@@ -73,15 +75,16 @@ exports.updateOne = Model =>
       runValidators: true,
     });
 
+    if (!data)
+      return next(
+        new ErrorThrower('No document found and cannot be modified', 404)
+      );
+
     if (Model.modelName === 'Post' && data && data.modified === false) {
       data.modified = true;
       await data.save();
     }
 
-    if (!data)
-      return next(
-        new ErrorThrower('No document found and cannot be modified', 404)
-      );
     res.status(200).json({
       status: 'success',
       data,
@@ -123,7 +126,14 @@ exports.deleteOne = (Model, path, secModel) =>
       return next(
         new ErrorThrower('No document found and cannot be deleted', 404)
       );
-    if (path) fs.unlinkSync(`${path}/${data.image}`);
+
+    const bucket = `${Model.modelName.toLowerCase()}-images`;
+    if (data.image) {
+      const { data: deleteData, error: deleteError } = await supabase.storage
+        .from(bucket)
+        .remove([data.image]);
+    }
+
     res.status(204).json({
       status: 'success',
       message: 'data deleted successfully',
@@ -177,29 +187,72 @@ exports.uploadImage = multer({
   },
 }).single('image');
 
-exports.resizeImage = (path, isUser, resX = null, resY = null, quality = 100) =>
+exports.resizeImage = (bucketType, resX = null, resY = null, quality = 100) =>
   catcher(async (req, res, next) => {
     if (!req.file) return next();
 
-    // priorities: req.params.id --> req.user.image (for logged userd only!) --> options.newImage
-
-    req.body.image = req.params.id
-      ? `image-${req.params.id}.jpeg`
-      : isUser
+    const bucket = `${bucketType}-images`;
+    const fileName = req.params.id
+      ? `${bucketType}-${req.params.id}.jpeg`
+      : bucketType === 'user'
       ? req.user.image
       : options.newImage;
 
-    await sharp(req.file.buffer, { failOnError: false })
+    const buffer = await sharp(req.file.buffer)
       .rotate()
       .resize(resX, resY)
       .toFormat('jpeg')
       .jpeg({ quality })
-      .toFile(`${path}/${req.body.image}`);
+      .toBuffer();
+
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, buffer, { cacheControl: '3600', upsert: true });
+
+    if (error) return next(new ErrorThrower('Image upload failed', 500));
+
+    req.body.image = data.path;
+
     next();
   });
 
-// Only for testing purposes
-exports.middlewareTest = () =>
-  catcher(async (req, res, next) => {
-    res.status(200).json({ status: 'success' });
-  });
+const renameBucketImage = async (bucket, oldFileName, newFileName) => {
+  try {
+    // 1. Download the image
+    const { data: downloadData, error: downloadError } = await supabase.storage
+      .from(bucket)
+      .download(oldFileName);
+
+    if (downloadError) {
+      console.log(downloadError);
+      throw new Error(`Failed to download the image: ${downloadError.message}`);
+    }
+
+    // 2. Upload the image with the new name
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from(bucket)
+      .upload(newFileName, downloadData, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (uploadError) {
+      throw new Error(
+        `Failed to upload the image with a new name: ${uploadError.message}`
+      );
+    }
+
+    // 3. Delete the old image
+    const { data: deleteData, error: deleteError } = await supabase.storage
+      .from(bucket)
+      .remove([oldFileName]);
+
+    if (deleteError) {
+      throw new Error(`Failed to delete the old image: ${deleteError.message}`);
+    }
+
+    return newFileName;
+  } catch (err) {
+    throw new Error(`Failed to rename image: ${err.message}`);
+  }
+};

@@ -158,13 +158,8 @@ exports.removeComment = catcher(async (req, res, next) => {
 });
 
 exports.getAllPosts = operators.getAll(Post);
-exports.getPost = operators.getOne(Post);
-exports.createPost = operators.createOne(
-  Post,
-  options.pathPostImage,
-  options.newImage,
-  User
-);
+exports.getPost = operators.getOne(Post, 'creator likes comments.user');
+exports.createPost = operators.createOne(Post, User);
 exports.updatePost = operators.updateOne(Post);
 exports.deletePost = operators.deleteOne(Post, options.pathPostImage, User);
 exports.deleteEverything = operators.deleteAll(Post, options.pathPostImage);

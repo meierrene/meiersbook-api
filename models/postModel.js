@@ -1,31 +1,22 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const postSchema = new mongoose.Schema(
+const commentSchema = new Schema({
+  text: String,
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Reference to
+  createdAt: { type: Date, default: Date.now },
+  edited: { type: Boolean, default: false },
+});
+
+const postSchema = new Schema(
   {
-    title: { type: String },
+    title: String,
     image: { type: String, required: [true, 'Please provide a image.'] },
-    createdAt: { type: Date, default: Date.now },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    creator: { type: mongoose.Types.ObjectId, ref: 'User' },
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    createdAt: { type: Date, default: Date.now },
     modified: { type: Boolean, default: false },
-    comments: [
-      {
-        text: String,
-        edited: {
-          type: Boolean,
-          default: false,
-        },
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-          required: true,
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
+    comments: [commentSchema],
   },
   { toJSON: { virtuals: true } },
   { toObject: { virtuals: true } }
