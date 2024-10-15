@@ -56,11 +56,7 @@ exports.beforeDeleteUser = catcher(async (req, res, next) => {
 });
 
 // Creating user before signing up to generate a new token
-exports.createUser = operators.createOne(
-  User,
-  options.pathUserImage,
-  options.newImage
-);
+exports.createUser = operators.createOne(User);
 exports.getAllUsers = operators.getAll(User);
 exports.getUser = operators.getOne(User, 'posts');
 exports.updateUser = operators.updateOne(User);

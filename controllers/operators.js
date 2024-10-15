@@ -35,6 +35,7 @@ exports.createOne = (Model, secModel) =>
 
     await renameBucketImage(bucket, data.image, newFileName);
     data.image = newFileName;
+    await data.save({ validateBeforeSave: false });
 
     if (req.body.imageUrl) {
       data.image = req.body.imageUrl;
@@ -58,7 +59,6 @@ exports.createOne = (Model, secModel) =>
         await user.save({ session, validateBeforeSave: false });
         await session.commitTransaction();
       } catch (error) {
-        console.error('Error during transaction:', error); // Log the error
         next(new ErrorThrower('Creating data failed, please try again.', 500));
       }
     }
@@ -114,7 +114,6 @@ exports.deleteOne = (Model, path, secModel) =>
         await data.deleteOne({ session, validateBeforeSave: false });
         await session.commitTransaction();
       } catch (err) {
-        console.error(err);
         return next(
           new ErrorThrower('Something went wrong to delete from database.', 500)
         );
@@ -172,7 +171,6 @@ exports.deleteAll = (Model, folderPath) =>
         });
       else next();
     } catch (error) {
-      console.error('Error deleting records and files:', error);
       return next(
         new ErrorThrower('No document found and cannot be deleted', 404)
       );
@@ -194,7 +192,7 @@ exports.resizeImage = (bucketType, resX = null, resY = null, quality = 100) =>
     const bucket = `${bucketType}-images`;
     const fileName = req.params.id
       ? `${bucketType}-${req.params.id}.jpeg`
-      : bucketType === 'user'
+      : !!req.user?.image
       ? req.user.image
       : options.newImage;
 
@@ -223,10 +221,8 @@ const renameBucketImage = async (bucket, oldFileName, newFileName) => {
       .from(bucket)
       .download(oldFileName);
 
-    if (downloadError) {
-      console.log(downloadError);
+    if (downloadError)
       throw new Error(`Failed to download the image: ${downloadError.message}`);
-    }
 
     // 2. Upload the image with the new name
     const { data: uploadData, error: uploadError } = await supabase.storage
