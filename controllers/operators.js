@@ -1,7 +1,5 @@
 const catcher = require('../utils/catcher');
 const ErrorThrower = require('../utils/ErrorThrower');
-const fs = require('fs');
-const path = require('path');
 const multer = require('multer');
 const sharp = require('sharp');
 const mongoose = require('mongoose');
@@ -152,16 +150,29 @@ exports.deleteAll = (Model, folderPath) =>
       const records = await Model.find(query);
 
       // Step 2: Delete associated image files
+      const filesToDelete = [];
+      const bucketType = Model.modelName.toLowerCase();
+
       for (const record of records) {
         const id = record._id.toString();
-        const imagePath = path.join(folderPath, `image-${id}.jpeg`);
+        const originalFilePath = `${bucketType}-${id}.jpeg`;
+        const thumbnailFilePath = `thumb-${bucketType}-${id}.jpeg`;
 
-        // Check if the file exists before attempting to delete it
-        if (fs.existsSync(imagePath))
-          fs.unlink(imagePath, err => {
-            if (err)
-              console.error(`Failed to delete image file: ${imagePath}`, err);
-          });
+        // Add each file path individually to the list
+        filesToDelete.push(originalFilePath, thumbnailFilePath);
+      }
+
+      const bucket = `${bucketType}-images`;
+
+      if (filesToDelete.length > 0) {
+        const { error } = await supabase.storage
+          .from(bucket)
+          .remove(filesToDelete);
+
+        if (error)
+          return next(
+            new ErrorThrower('Error deleting files from storage', 500)
+          );
       }
 
       // Step 3: Delete the records from the database

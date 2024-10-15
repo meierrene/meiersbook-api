@@ -5,7 +5,7 @@ const path = require('path');
 const pathPostImage = path.join('post');
 const pathUserImage = path.join('user');
 const newImage = 'newImage.jpeg';
-const thumbnailSettings = { size: 300, quality: 70 };
+const thumbnailSettings = { size: 300, quality: 80 };
 // const pathPostImage = path.join(__dirname, '..', 'uploads/postsImages/');
 // const pathUserImage = path.join(__dirname, '..', 'uploads/userImages/');
 // Ensure directories exist or create them
