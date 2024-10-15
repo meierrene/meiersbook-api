@@ -4,10 +4,10 @@ const path = require('path');
 // Define paths
 const pathPostImage = path.join('post');
 const pathUserImage = path.join('user');
+const newImage = 'newImage.jpeg';
+const thumbnailSettings = { size: 300, quality: 70 };
 // const pathPostImage = path.join(__dirname, '..', 'uploads/postsImages/');
 // const pathUserImage = path.join(__dirname, '..', 'uploads/userImages/');
-const newImage = 'newImage.jpeg';
-
 // Ensure directories exist or create them
 // [pathPostImage, pathUserImage].forEach(dir => {
 //   if (!fs.existsSync(dir)) {
@@ -20,4 +20,5 @@ module.exports = {
   pathPostImage,
   pathUserImage,
   newImage,
+  thumbnailSettings,
 };

@@ -52,7 +52,7 @@ router
   // .get(userController.getUser)
   .patch(
     operators.uploadImage,
-    operators.resizeImage(options.pathUserImage, true, 500, 500, 80),
+    operators.resizeImage(options.pathUserImage,  500, 500, 80),
     userController.updateUser
   )
   .delete(

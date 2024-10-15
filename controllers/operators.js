@@ -35,6 +35,7 @@ exports.createOne = (Model, secModel) =>
 
     await renameBucketImage(bucket, data.image, newFileName);
     data.image = newFileName;
+    data.thumbnail = `thumb-${newFileName}`;
     await data.save({ validateBeforeSave: false });
 
     if (req.body.imageUrl) {
@@ -128,9 +129,11 @@ exports.deleteOne = (Model, path, secModel) =>
 
     const bucket = `${Model.modelName.toLowerCase()}-images`;
     if (data.image) {
-      const { data: deleteData, error: deleteError } = await supabase.storage
+      const { error: imageError } = await supabase.storage
         .from(bucket)
-        .remove([data.image]);
+        .remove([data.image, `thumb-${data.image}`]);
+      if (imageError)
+        return next(new ErrorThrower('Failed to delete image files', 500));
     }
 
     res.status(204).json({
@@ -211,6 +214,26 @@ exports.resizeImage = (bucketType, resX = null, resY = null, quality = 100) =>
 
     req.body.image = data.path;
 
+    // Generate and upload the thumbnail (300px width)
+    const thumbnailBuffer = await sharp(req.file.buffer)
+      .rotate()
+      .resize(options.thumbnailSettings.size)
+      .jpeg({ quality: options.thumbnailSettings.quality })
+      .toBuffer();
+
+    const thumbnailName = `thumb-${fileName}`;
+    const { error: thumbError } = await supabase.storage
+      .from(bucket)
+      .upload(thumbnailName, thumbnailBuffer, {
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+    if (thumbError)
+      return next(new ErrorThrower('Thumbnail upload failed', 500));
+
+    req.body.thumbnail = thumbnailName;
+
     next();
   });
 
@@ -225,7 +248,7 @@ const renameBucketImage = async (bucket, oldFileName, newFileName) => {
       throw new Error(`Failed to download the image: ${downloadError.message}`);
 
     // 2. Upload the image with the new name
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from(bucket)
       .upload(newFileName, downloadData, {
         cacheControl: '3600',
@@ -239,12 +262,28 @@ const renameBucketImage = async (bucket, oldFileName, newFileName) => {
     }
 
     // 3. Delete the old image
-    const { data: deleteData, error: deleteError } = await supabase.storage
+    const { error: deleteError } = await supabase.storage
       .from(bucket)
       .remove([oldFileName]);
 
     if (deleteError) {
       throw new Error(`Failed to delete the old image: ${deleteError.message}`);
+    }
+
+    // Handle renaming the thumbnail as well
+    const oldThumb = `thumb-${oldFileName}`;
+    const newThumb = `thumb-${newFileName}`;
+
+    const { data: thumbData, error: thumbError } = await supabase.storage
+      .from(bucket)
+      .download(oldThumb);
+
+    if (!thumbError) {
+      await supabase.storage
+        .from(bucket)
+        .upload(newThumb, thumbData, { cacheControl: '3600', upsert: false });
+
+      await supabase.storage.from(bucket).remove([oldThumb]);
     }
 
     return newFileName;

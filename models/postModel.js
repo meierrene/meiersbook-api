@@ -12,6 +12,7 @@ const postSchema = new Schema(
   {
     title: String,
     image: { type: String, required: [true, 'Please provide a image.'] },
+    thumbnail: String,
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now },
