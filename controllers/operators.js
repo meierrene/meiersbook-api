@@ -28,7 +28,7 @@ exports.createOne = (Model, secModel) =>
   catcher(async (req, res, next) => {
     // 1. Create the document
     const data = await Model.create(req.body);
-    const bucket = `${Model.modelName.toLowerCase()}-images`;
+    const { bucket } = options.getBucket(Model);
     const newFileName = `${Model.modelName.toLowerCase()}-${data.id}.jpeg`;
 
     await renameBucketImage(bucket, data.image, newFileName);
@@ -90,7 +90,7 @@ exports.updateOne = Model =>
     });
   });
 
-exports.deleteOne = (Model, path, secModel) =>
+exports.deleteOne = (Model, secModel) =>
   catcher(async (req, res, next) => {
     const id = req.removeThisId ? req.removeThisId : req.params.id;
     const data = await Model.findById(id);
@@ -125,7 +125,8 @@ exports.deleteOne = (Model, path, secModel) =>
         new ErrorThrower('No document found and cannot be deleted', 404)
       );
 
-    const bucket = `${Model.modelName.toLowerCase()}-images`;
+    const { bucket } = options.getBucket(Model);
+
     if (data.image) {
       const { error: imageError } = await supabase.storage
         .from(bucket)
@@ -140,7 +141,7 @@ exports.deleteOne = (Model, path, secModel) =>
     });
   });
 
-exports.deleteAll = (Model, folderPath) =>
+exports.deleteAll = Model =>
   catcher(async (req, res, next) => {
     try {
       let query = {};
@@ -151,7 +152,8 @@ exports.deleteAll = (Model, folderPath) =>
 
       // Step 2: Delete associated image files
       const filesToDelete = [];
-      const bucketType = Model.modelName.toLowerCase();
+
+      const { bucket, bucketType } = options.getBucket(Model);
 
       for (const record of records) {
         const id = record._id.toString();
@@ -161,8 +163,6 @@ exports.deleteAll = (Model, folderPath) =>
         // Add each file path individually to the list
         filesToDelete.push(originalFilePath, thumbnailFilePath);
       }
-
-      const bucket = `${bucketType}-images`;
 
       if (filesToDelete.length > 0) {
         const { error } = await supabase.storage
@@ -199,11 +199,12 @@ exports.uploadImage = multer({
   },
 }).single('image');
 
-exports.resizeImage = (bucketType, resX = null, resY = null, quality = 100) =>
+exports.resizeImage = (Model, resX = null, resY = null, quality = 100) =>
   catcher(async (req, res, next) => {
     if (!req.file) return next();
 
-    const bucket = `${bucketType}-images`;
+    const { bucket, bucketType } = options.getBucket(Model);
+
     const fileName = req.params.id
       ? `${bucketType}-${req.params.id}.jpeg`
       : !!req.user?.image
@@ -221,7 +222,10 @@ exports.resizeImage = (bucketType, resX = null, resY = null, quality = 100) =>
       .from(bucket)
       .upload(fileName, buffer, { cacheControl: '3600', upsert: true });
 
-    if (error) return next(new ErrorThrower('Image upload failed', 500));
+    if (error) {
+      console.log(error);
+      return next(new ErrorThrower('Image upload failed', 500));
+    }
 
     req.body.image = data.path;
 

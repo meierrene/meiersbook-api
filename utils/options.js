@@ -1,24 +1,15 @@
-// const fs = require('fs');
-const path = require('path');
-
-// Define paths
-const pathPostImage = path.join('post');
-const pathUserImage = path.join('user');
-const newImage = 'newImage.jpeg';
 const thumbnailSettings = { size: 300, quality: 80 };
-// const pathPostImage = path.join(__dirname, '..', 'uploads/postsImages/');
-// const pathUserImage = path.join(__dirname, '..', 'uploads/userImages/');
-// Ensure directories exist or create them
-// [pathPostImage, pathUserImage].forEach(dir => {
-//   if (!fs.existsSync(dir)) {
-//     fs.mkdirSync(dir, { recursive: true });
-//   }
-// });
+const newImage = 'newImage.jpeg';
+const getBucket = Model => {
+  const bucket = `${Model.modelName.toLowerCase()}-images${
+    process.env.NODE_ENV !== 'production' ? '-dev' : ''
+  }`;
+  const bucketType = bucket.split('-')[0];
+  return { bucket, bucketType };
+};
 
-// Export paths
 module.exports = {
-  pathPostImage,
-  pathUserImage,
-  newImage,
   thumbnailSettings,
+  newImage,
+  getBucket,
 };

@@ -2,7 +2,7 @@ const express = require('express');
 const postController = require('../controllers/postController');
 const authController = require('../controllers/authController');
 const operators = require('../controllers/operators');
-const options = require('../utils/options');
+const Post = require('../models/postModel');
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ router.delete(
 router.post(
   '/',
   operators.uploadImage,
-  operators.resizeImage(options.pathPostImage),
+  operators.resizeImage(Post),
   postController.createPost
 );
 
@@ -39,7 +39,7 @@ router
   .route('/:id')
   .patch(
     operators.uploadImage,
-    operators.resizeImage(options.pathPostImage),
+    operators.resizeImage(Post),
     postController.updatePost
   )
   .delete(postController.deletePost);

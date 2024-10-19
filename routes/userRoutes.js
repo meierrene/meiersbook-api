@@ -2,7 +2,7 @@ const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 const operators = require('../controllers/operators');
-const options = require('../utils/options');
+const User = require('../models/userModel');
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router
 router.post(
   '/signup',
   operators.uploadImage,
-  operators.resizeImage(options.pathUserImage, 500, 500, 80),
+  operators.resizeImage(User, 500, 500, 80),
   userController.createUser,
   authController.signup
 );
@@ -30,7 +30,7 @@ router.get('/me', userController.getMe, userController.getUser);
 router.patch(
   '/updateMe',
   operators.uploadImage,
-  operators.resizeImage(options.pathUserImage, 500, 500, 80),
+  operators.resizeImage(User, 500, 500, 80),
   userController.updateMe
 );
 router.delete(
@@ -52,7 +52,7 @@ router
   // .get(userController.getUser)
   .patch(
     operators.uploadImage,
-    operators.resizeImage(options.pathUserImage,  500, 500, 80),
+    operators.resizeImage(User, 500, 500, 80),
     userController.updateUser
   )
   .delete(

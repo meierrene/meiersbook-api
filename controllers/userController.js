@@ -60,5 +60,5 @@ exports.createUser = operators.createOne(User);
 exports.getAllUsers = operators.getAll(User);
 exports.getUser = operators.getOne(User, 'posts');
 exports.updateUser = operators.updateOne(User);
-exports.deleteMyFiles = operators.deleteAll(Post, options.pathPostImage);
-exports.deleteUser = operators.deleteOne(User, options.pathUserImage);
+exports.deleteMyFiles = operators.deleteAll(Post);
+exports.deleteUser = operators.deleteOne(User);
