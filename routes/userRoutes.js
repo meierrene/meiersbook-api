@@ -49,7 +49,6 @@ router
 
 router
   .route('/:id')
-  // .get(userController.getUser)
   .patch(
     operators.uploadImage,
     operators.resizeImage(User, 500, 500, 80),

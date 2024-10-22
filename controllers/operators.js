@@ -141,11 +141,14 @@ exports.deleteOne = (Model, secModel) =>
     });
   });
 
-exports.deleteAll = Model =>
+exports.deleteAll = (Model, secModel) =>
   catcher(async (req, res, next) => {
     try {
       let query = {};
-      if (req.removeThisId) query = { creator: req.removeThisId };
+      if (req.removeThisId && req.removeThisId !== 'delete-everything')
+        query = { creator: req.removeThisId };
+
+      if (req.removeThisId === 'delete-everything') query = {}; // No filter, delete all records
 
       // Step 1: Find all records (posts) based on the query
       const records = await Model.find(query);
@@ -177,9 +180,12 @@ exports.deleteAll = Model =>
 
       // Step 3: Delete the records from the database
       await Model.deleteMany(query);
+      // Step 4: Clear the 'posts' field for every user
+      if (secModel && req.removeThisId === 'delete-everything')
+        await secModel.updateMany({}, { posts: [] });
 
-      if (!req.removeThisId)
-        res.status(201).json({
+      if (req.removeThisId === 'delete-everything')
+        res.status(204).json({
           status: 'success',
           message: 'All data were deleted with success!',
         });

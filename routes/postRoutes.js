@@ -15,6 +15,7 @@ router.use(authController.protect);
 router.delete(
   '/delete-everything',
   authController.restrictTo('admin'),
+  postController.beforeDeletePosts,
   postController.deleteEverything
 );
 
