@@ -109,3 +109,10 @@ We welcome contributions!
 - Fork the repository
 - Create a feature branch: `git checkout -b feature/feature-name`
 - Submit a pull request
+
+---
+
+### **README for `meiersbook-client`**
+
+For the API documentation and setup, please refer to the [MeiersBook Client Repository](https://github.com/meierrene/meiersbook-client).
+
