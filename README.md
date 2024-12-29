@@ -1,5 +1,3 @@
-### **README for `meiersbook-api`**
-
 # ⚙️ **MeiersBook API**
 
 The **backend** of MeiersBook, offering secure and scalable RESTful APIs for managing user authentication, posts, and email notifications.
