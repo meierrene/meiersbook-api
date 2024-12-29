@@ -51,8 +51,8 @@ Create a `.env` file and add:
 ```env
 DATABASE_URL=mongodb+srv://<username>:<password>@cluster.meiersbook.mongodb.net
 JWT_SECRET=your_jwt_secret
-EMAIL_HOST=smtp.mailtrap.io
-EMAIL_PORT=2525
+EMAIL_HOST=smtp-relay.brevo.com
+EMAIL_PORT=587
 EMAIL_USERNAME=<username>
 EMAIL_PASSWORD=<password>
 EMAIL_FROM=contact@renemeier.info
@@ -109,9 +109,3 @@ We welcome contributions!
 - Fork the repository
 - Create a feature branch: `git checkout -b feature/feature-name`
 - Submit a pull request
-
----
-
-## 📓 **License**
-
-This project is licensed under the MIT License.
