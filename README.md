@@ -61,7 +61,7 @@ EMAIL_FROM=contact@renemeier.info
 ### **4️⃣ Run the Development Server**
 
 ```bash
-npm run dev
+npm start
 ```
 
 ---
