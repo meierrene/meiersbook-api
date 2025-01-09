@@ -1,4 +1,4 @@
-const thumbnailSettings = { size: 300, quality: 80 };
+const thumbnailSettings = { size: 600, quality: 80 };
 const newImage = 'newImage.jpeg';
 const getBucket = Model => {
   const bucket = `${Model.modelName.toLowerCase()}-images${
