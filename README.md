@@ -145,13 +145,35 @@ npm start
 ## 📁 **Project Structure**
 
 ```plaintext
-src/
+backend/
 ├── controllers/      # API request handlers
-├── middlewares/      # Reusable middleware
-├── models/           # MongoDB schemas
-├── routes/           # Route definitions
-├── utils/            # Utility functions
-├── services/         # External service integrations
+│   ├── authController.js
+│   ├── googleController.js
+│   ├── postController.js
+│   └── userController.js
+├── dev-data/         # Development data for testing
+│   ├── backups/
+│   └── img/
+├── models/           # Mongoose models for database collections
+│   ├── postModel.js
+│   └── userModel.js
+├── routes/           # API route definitions
+│   ├── googleRoutes.js
+│   ├── postRoutes.js
+│   └── userRoutes.js
+├── utils/            # Utility modules and helpers
+│   ├── catchers.js
+│   ├── emails.js
+│   ├── ErrorThrower.js
+│   ├── options.js
+│   ├── passport.js
+│   └── supabase.js
+├── .gitignore        # Git ignored files configuration
+├── app.js            # Main application file
+├── config.env        # Environment variables configuration
+├── package.json      # Project dependencies and scripts
+├── package-lock.json # Dependency lock file
+├── README.md         # Project documentation
 └── server.js         # Application entry point
 ```
 
