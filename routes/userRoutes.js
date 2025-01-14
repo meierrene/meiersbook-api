@@ -31,7 +31,8 @@ router.patch(
   '/updateMe',
   operators.uploadImage,
   operators.resizeImage(User, 500, 500, 80),
-  userController.updateMe
+  userController.updateMe,
+  userController.updateUser
 );
 router.delete(
   '/deleteMe',

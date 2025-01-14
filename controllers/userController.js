@@ -3,15 +3,6 @@ const Post = require('../models/postModel');
 const operators = require('./operators');
 const catcher = require('../utils/catcher');
 const ErrorThrower = require('../utils/ErrorThrower');
-const options = require('../utils/options');
-
-const filterObj = (obj, ...allowedFields) => {
-  const newObj = {};
-  Object.keys(obj).forEach(el => {
-    if (allowedFields.includes(el)) newObj[el] = obj[el];
-  });
-  return newObj;
-};
 
 exports.getUserNamebyId = (req, res, next) => {
   req.filtered = ['name', 'image', 'email'];
@@ -33,20 +24,9 @@ exports.updateMe = catcher(async (req, res, next) => {
       )
     );
 
-  // 2) Filter out unwanted fields names that are not allowed to be updated
-  const filteredBody = filterObj(req.body, 'name', 'email');
-  if (req.file) filteredBody.image = req.file.filename;
+  req.params.id = req.user.id;
 
-  // 3) Update user document
-  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
-    new: true,
-    runValidators: true,
-  });
-
-  res.status(200).json({
-    status: 'success',
-    data: { users: updatedUser },
-  });
+  next();
 });
 // Do NOT update Passwords with this!
 
