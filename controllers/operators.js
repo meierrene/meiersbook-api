@@ -29,11 +29,9 @@ exports.createOne = (Model, secModel) =>
     // 1. Create the document
     const data = await Model.create(req.body);
 
-    const { bucket, imageName } = options.getBucket(Model, data.id);
-    await renameBucketImage(bucket, data.image, imageName);
-    data.image = imageName;
+    data.image = await renameBucketImage(Model, data.image, data.id);
     if (Model.modelName === 'Post')
-      data.thumbnail = options.getThumbnailName(imageName);
+      data.thumbnail = options.getThumbnailName(data.image);
     await data.save({ validateBeforeSave: false });
 
     if (req.body.imageUrl) {
@@ -84,12 +82,15 @@ exports.updateOne = Model =>
       await data.save();
     }
 
-    const { bucket, imageName } = options.getBucket(Model, req.params.id);
-    await renameBucketImage(bucket, data.image, imageName);
-    data.image = imageName;
+    data.image = await renameBucketImage(Model, data.image, data.id);
     if (Model.modelName === 'Post')
-      data.thumbnail = options.getThumbnailName(imageName);
+      data.thumbnail = options.getThumbnailName(data.image);
     await data.save({ validateBeforeSave: false });
+
+    if (req.body.imageUrl) {
+      data.image = req.body.imageUrl;
+      await data.save({ validateBeforeSave: false });
+    }
 
     res.status(200).json({
       status: 'success',
@@ -265,15 +266,17 @@ exports.resizeImage = (Model, resX = null, resY = null, quality = 100) =>
     next();
   });
 
-const renameBucketImage = async (bucket, oldImageName, newImageName) => {
+const renameBucketImage = async (Model, oldImageName, id) => {
+  const { bucket, imageName } = options.getBucket(Model, id);
+
   // Skip renaming if the file already has the correct name
-  if (oldImageName === newImageName) {
-    return newImageName;
+  if (oldImageName === imageName) {
+    return imageName;
   }
 
   try {
     // //Delete the doubled names to ensure the file will be renamed
-    await supabase.storage.from(bucket).remove(newImageName);
+    await supabase.storage.from(bucket).remove(imageName);
 
     // Download the old file
     const { data: fileData, error: downloadError } = await supabase.storage
@@ -286,7 +289,7 @@ const renameBucketImage = async (bucket, oldImageName, newImageName) => {
     // Upload the new file
     const { error: uploadError } = await supabase.storage
       .from(bucket)
-      .upload(newImageName, fileData, {
+      .upload(imageName, fileData, {
         cacheControl: '1',
         upsert: false,
       });
@@ -304,9 +307,9 @@ const renameBucketImage = async (bucket, oldImageName, newImageName) => {
     if (deleteError)
       throw new Error(`Failed to delete the old image: ${deleteError.message}`);
 
-    if (bucket.includes('post')) {
+    if (Model.modelName === 'Post') {
       // Handle renaming the thumbnail as well
-      const newThumbnail = options.getThumbnailName(newImageName);
+      const newThumbnail = options.getThumbnailName(imageName);
       const oldThumbnail = options.getThumbnailName(oldImageName);
 
       const { data: thumbData, error: thumbError } = await supabase.storage
@@ -323,7 +326,7 @@ const renameBucketImage = async (bucket, oldImageName, newImageName) => {
       }
     }
 
-    return newImageName;
+    return imageName;
   } catch (err) {
     throw new Error(`Failed to rename image: ${err.message}`);
   }
