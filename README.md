@@ -102,6 +102,8 @@ npm start
 | `DELETE`   | `/api/v1/users/deleteMe` | Delete the current logged-in user's account            |
 | `GET`      | `/api/v1/users/find/:id` | Delete the current logged-in user's account            |
 
+---
+
 ### Administrator's privilege
 
 | **Method** | **Endpoint**                      | **Description**                                          |
@@ -110,6 +112,33 @@ npm start
 | `PATCH`    | `/api/v1/users/:id`               | Update any user's details.                               |
 | `DELETE`   | `/api/v1/users/:id`               | Delete any user.                                         |
 | `DELETE`   | `/api/v1/posts/delete-everything` | Delete all posts from every users. ⚠ Use with coution! ⚠ |
+
+---
+
+### Posts
+
+| **Method** | **Endpoint**                           | **Description**                                   |
+| ---------- | -------------------------------------- | ------------------------------------------------- |
+| `GET`      | `/api/v1/posts`                        | Retrieve all posts.                               |
+| `GET`      | `/api/v1/posts/:id`                    | Retrieve a specific post by ID.                   |
+| `POST`     | `/api/v1/posts`                        | Create a new post with an optional image.         |
+| `PATCH`    | `/api/v1/posts/:id`                    | Update a specific post by ID, ncluding the image. |
+| `DELETE`   | `/api/v1/posts/:id`                    | Delete a specific post b ID.                      |
+| `POST`     | `/api/v1/posts/:id/like`               | Like a specific post.                             |
+| `POST`     | `/api/v1/posts/:id/unlike`             | Unlike a specific post.                           |
+| `POST`     | `/api/v1/posts/:id/comment`            | Add a comment to a specific post.                 |
+| `PATCH`    | `/api/v1/posts/:id/comment/:commentId` | Edit a comment on a specific post.                |
+| `DELETE`   | `/api/v1/posts/:id/comment/:commentId` | Delete a comment on a specific post.              |
+
+---
+
+### Google OAuth
+
+| **Method** | **Endpoint**              | **Description**                                  |
+| ---------- | ------------------------- | ------------------------------------------------ |
+| `POST`     | `/api/v1/google`          | Exchange a Google token for user authentication. |
+| `GET`      | `/api/v1/google/login`    | Initiate Google OAuth login.                     |
+| `POST`     | `/api/v1/google/callback` | Handle the Google OAuth callback after login.    |
 
 ---
 
