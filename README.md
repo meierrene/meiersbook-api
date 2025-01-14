@@ -104,12 +104,12 @@ npm start
 
 ### Administrator's privilege
 
-| **Method** | **Endpoint**                      | **Description**                                                 |
-| ---------- | --------------------------------- | --------------------------------------------------------------- |
-| `GET`      | `/api/v1/users/`                  | Get all users.                                                  |
-| `PATCH`    | `/api/v1/users/:id`               | Update any user's details.                                      |
-| `DELETE`   | `/api/v1/users/:id`               | Delete any user.                                                |
-| `DELETE`   | `/api/v1/posts/delete-everything` | Delete all posts from every users. [!CAUTION] Use with coution! |
+| **Method** | **Endpoint**                      | **Description**                                          |
+| ---------- | --------------------------------- | -------------------------------------------------------- |
+| `GET`      | `/api/v1/users/`                  | Get all users.                                           |
+| `PATCH`    | `/api/v1/users/:id`               | Update any user's details.                               |
+| `DELETE`   | `/api/v1/users/:id`               | Delete any user.                                         |
+| `DELETE`   | `/api/v1/posts/delete-everything` | Delete all posts from every users. ⚠ Use with coution! ⚠ |
 
 ---
 
