@@ -106,12 +106,12 @@ npm start
 
 ### Administrator's privilege
 
-| **Method** | **Endpoint**                      | **Description**                                          |
-| ---------- | --------------------------------- | -------------------------------------------------------- |
-| `GET`      | `/api/v1/users/`                  | Get all users.                                           |
-| `PATCH`    | `/api/v1/users/:id`               | Update any user's details.                               |
-| `DELETE`   | `/api/v1/users/:id`               | Delete any user.                                         |
-| `DELETE`   | `/api/v1/posts/delete-everything` | Delete all posts from every users. ⚠ Use with coution! ⚠ |
+| **Method** | **Endpoint**                      | **Description**                                              |
+| ---------- | --------------------------------- | ------------------------------------------------------------ |
+| `GET`      | `/api/v1/users/`                  | Get all users.                                               |
+| `PATCH`    | `/api/v1/users/:id`               | Update any user's details.                                   |
+| `DELETE`   | `/api/v1/users/:id`               | Delete any user.                                             |
+| `DELETE`   | `/api/v1/posts/delete-everything` | Delete all posts from every users. ⚠ **Use with caution!** ⚠ |
 
 ---
 
@@ -123,7 +123,7 @@ npm start
 | `GET`      | `/api/v1/posts/:id`                    | Retrieve a specific post by ID.                   |
 | `POST`     | `/api/v1/posts`                        | Create a new post with an optional image.         |
 | `PATCH`    | `/api/v1/posts/:id`                    | Update a specific post by ID, ncluding the image. |
-| `DELETE`   | `/api/v1/posts/:id`                    | Delete a specific post b ID.                      |
+| `DELETE`   | `/api/v1/posts/:id`                    | Delete a specific post by ID.                     |
 | `POST`     | `/api/v1/posts/:id/like`               | Like a specific post.                             |
 | `POST`     | `/api/v1/posts/:id/unlike`             | Unlike a specific post.                           |
 | `POST`     | `/api/v1/posts/:id/comment`            | Add a comment to a specific post.                 |
