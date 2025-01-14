@@ -77,14 +77,39 @@ npm start
 
 ## 📁 **API Endpoints**
 
-| **Method** | **Endpoint**          | **Description**     |
-| ---------- | --------------------- | ------------------- |
-| `POST`     | `/api/v1/auth/signup` | Register a new user |
-| `POST`     | `/api/v1/auth/login`  | Log in a user       |
-| `GET`      | `/api/v1/posts`       | Get all posts       |
-| `POST`     | `/api/v1/posts`       | Create a new post   |
-| `PATCH`    | `/api/v1/posts/:id`   | Update a post by ID |
-| `DELETE`   | `/api/v1/posts/:id`   | Delete a post by ID |
+### Authentication
+
+| **Method** | **Endpoint**                        | **Description**                             |
+| ---------- | ----------------------------------- | ------------------------------------------- |
+| `POST`     | `/api/v1/auth/signup`               | Register a new user.                        |
+| `POST`     | `/api/v1/auth/login`                | Log in an existing user.                    |
+| `GET`      | `/api/v1/auth/logout`               | Log out the current user.                   |
+| `POST`     | `/api/v1/auth/forgotPassword`       | Request a password reset email.             |
+| `PATCH`    | `/api/v1/auth/resetPassword/:token` | Reset a password using a valid reset token. |
+| `PATCH`    | `/api/v1/auth/updateMyPassword`     | Update the current user's password.         |
+
+---
+
+### Users
+
+| **Method** | **Endpoint**             | **Description**                                        |
+| ---------- | ------------------------ | ------------------------------------------------------ |
+| `POST`     | `/api/v1/users/signup`   | Register a new user with an optional profile picture.  |
+| `POST`     | `/api/v1/users/login`    | Authenticate a user and generate a JWT.                |
+| `GET`      | `/api/v1/users/logout`   | Log out the currently logged-in user.                  |
+| `GET`      | `/api/v1/users/me`       | Retrieve the current logged-in user's details.         |
+| `PATCH`    | `/api/v1/users/updateMe` | Update the current logged-in user's profile and image. |
+| `DELETE`   | `/api/v1/users/deleteMe` | Delete the current logged-in user's account            |
+| `GET`      | `/api/v1/users/find/:id` | Delete the current logged-in user's account            |
+
+### Administrator's privilege
+
+| **Method** | **Endpoint**                      | **Description**                                                 |
+| ---------- | --------------------------------- | --------------------------------------------------------------- |
+| `GET`      | `/api/v1/users/`                  | Get all users.                                                  |
+| `PATCH`    | `/api/v1/users/:id`               | Update any user's details.                                      |
+| `DELETE`   | `/api/v1/users/:id`               | Delete any user.                                                |
+| `DELETE`   | `/api/v1/posts/delete-everything` | Delete all posts from every users. [!CAUTION] Use with coution! |
 
 ---
 
@@ -109,12 +134,12 @@ Test your API using **Postman** or other tools:
 
 1. Using Postman:
 
-- Import the API collection in Postman.
-- Add example payloads for testing each endpoint.
+   - Import the API collection in Postman.
+   - Add example payloads for testing each endpoint.
 
 2. API Response Example:
 
-- A successful post creation:
+   - A successful post creation:
 
 ```bash
 {
@@ -148,7 +173,7 @@ git checkout -b feature/new-feature
 
 3. Submit a pull request:
 
-- Provide a detailed description of the changes.
+   - Provide a detailed description of the changes.
 
 ---
 
