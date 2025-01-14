@@ -1,29 +1,32 @@
 # ⚙️ **MeiersBook API**
 
-The **backend** of MeiersBook, offering secure and scalable RESTful APIs for managing user authentication, posts, and email notifications.
+Welcome to the **backend** of MeiersBook! A robust and scalable RESTful API designed to power the MeiersBook application. This API supports user authentication, post management, email notifications, and much more!
 
 ---
 
 ## 🛠️ **Features**
 
-- 🔒 **JWT Authentication**: Secure user authentication.
-- ✏️ **Post CRUD**: Full post management functionality.
-- 📧 **Email Notifications**: Welcome and password recovery emails.
-- 🚤️ **Database**: MongoDB for scalable data storage.
-- ⚙️ **Error Handling**: Robust error responses for debugging.
+- 🔒 **JWT Authentication**: Secure and scalable user authentication.
+- ✍️ **Post Management**: Comprehensive CRUD functionality for posts.
+- 📬 **Email Notifications**: Automated welcome and password recovery emails.
+- 📂 **Database**: MongoDB ensures reliable and scalable data storage.
+- 🛡️ **Error Handling**: Centralized error handling for seamless debugging.
+- 🌍 **OAuth Integration**: Google OAuth for streamlined user onboarding.
 
 ---
 
 ## 🧪 **Tech Stack**
 
-| **Technology** | **Description**   |
-| -------------- | ----------------- |
-| **Node.js**    | Backend Framework |
-| **Express.js** | Web Framework     |
-| **MongoDB**    | Database          |
-| **Mongoose**   | ODM for MongoDB   |
-| **Brevo**      | Email Service     |
-| **JWT**        | Authentication    |
+| **Technology**        | **Description**                   |
+| --------------------- | --------------------------------- |
+| **Node.js**           | Backend JavaScript runtime        |
+| **Express.js**        | Web application framework         |
+| **MongoDB**           | NoSQL database                    |
+| **Mongoose**          | MongoDB object modeling tool      |
+| **Brevo (Email API)** | Email delivery and notifications  |
+| **Supabase**          | File storage solution             |
+| **JWT**               | Secure token-based authentication |
+| **Google OAuth**      | Social login for user onboarding  |
 
 ---
 
@@ -47,13 +50,21 @@ npm install
 Create a `.env` file and add:
 
 ```env
-DATABASE_URL=mongodb+srv://<username>:<password>@cluster.meiersbook.mongodb.net
+NODE_ENV=development
+PORT=5000
+DATABASE=mongodb+srv://<username>:<password>@cluster.meiersbook.mongodb.net/devData?retryWrites=true&w=majority
 JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=90d
 EMAIL_HOST=smtp-relay.brevo.com
 EMAIL_PORT=587
 EMAIL_USERNAME=<username>
 EMAIL_PASSWORD=<password>
-EMAIL_FROM=contact@renemeier.info
+EMAIL_FROM=contact@anyemail.info
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+
 ```
 
 ### **4️⃣ Run the Development Server**
@@ -81,36 +92,68 @@ npm start
 
 ```plaintext
 src/
-├── routes/         # API route definitions
-├── controllers/    # Request handlers
-├── models/         # Mongoose schemas
-├── utils/          # Utility functions
-└── server.js       # Application entry point
+├── controllers/      # API request handlers
+├── middlewares/      # Reusable middleware
+├── models/           # MongoDB schemas
+├── routes/           # Route definitions
+├── utils/            # Utility functions
+├── services/         # External service integrations
+└── server.js         # Application entry point
 ```
 
 ---
 
-## 🧥 **Testing**
+## 🧪 **Testing the API**
 
 Test your API using **Postman** or other tools:
 
-1. Import the API endpoints.
-2. Use example payloads from the documentation.
-3. Verify responses and debug as necessary.
+1. Using Postman:
+
+- Import the API collection in Postman.
+- Add example payloads for testing each endpoint.
+
+2. API Response Example:
+
+- A successful post creation:
+
+```bash
+{
+  "status": "success",
+  "data": {
+    "id": "12345",
+    "title": "My First Post",
+    "content": "This is a test post.",
+    "author": "My Name",
+    "createdAt": "2025-01-01T12:00:00Z"}
+}
+```
 
 ---
 
-## 🧥 **Contributing**
+## 🤝 **Contributing**
 
-We welcome contributions!
+We welcome contributions! Follow these steps:
 
-- Fork the repository
-- Create a feature branch: `git checkout -b feature/feature-name`
-- Submit a pull request
+1. Fork the repository:
+
+```bash
+git fork https://github.com/meierrene/meiersbook-api.git
+```
+
+2. Create a feature branch:
+
+```bash
+git checkout -b feature/new-feature
+```
+
+3. Submit a pull request:
+
+- Provide a detailed description of the changes.
 
 ---
+
+## 🔗 **Related Repositories**
 
 ### **README for `meiersbook-client`**
 
-For the API documentation and setup, please refer to the [MeiersBook Client Repository](https://github.com/meierrene/meiersbook-client).
-
+Frontend: [MeiersBook Client](https://github.com/meierrene/meiersbook-client).
