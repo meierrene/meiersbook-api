@@ -252,7 +252,7 @@ exports.resizeImage = (Model, resX = null, resY = null, quality = 100) =>
       const { error: thumbError } = await supabase.storage
         .from(bucket)
         .upload(thumbnailName, thumbnailBuffer, {
-          cacheControl: '3600',
+          cacheControl: '1',
           upsert: true,
         });
 
@@ -287,7 +287,7 @@ const renameBucketImage = async (bucket, oldImageName, newImageName) => {
     const { error: uploadError } = await supabase.storage
       .from(bucket)
       .upload(newImageName, fileData, {
-        cacheControl: '3600',
+        cacheControl: '1',
         upsert: false,
       });
 
