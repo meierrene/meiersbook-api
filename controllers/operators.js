@@ -312,6 +312,8 @@ const renameBucketImage = async (Model, oldImageName, id) => {
       const newThumbnail = options.getThumbnailName(imageName);
       const oldThumbnail = options.getThumbnailName(oldImageName);
 
+      await supabase.storage.from(bucket).remove(newThumbnail);
+
       const { data: thumbData, error: thumbError } = await supabase.storage
         .from(bucket)
         .download(oldThumbnail);
