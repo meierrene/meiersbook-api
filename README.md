@@ -1,4 +1,6 @@
-# ⚙️ **MeiersBook API**
+![logo-meiersbook-color](https://github.com/user-attachments/assets/ad6f863e-fc52-4f9e-b5b6-357319e66762)
+
+# **MeiersBook API**
 
 Welcome to the **backend** of MeiersBook! A robust and scalable RESTful API designed to power the MeiersBook application. This API supports user authentication, post management, email notifications, and much more!
 
